@@ -1,0 +1,16 @@
+config:
+  target: 'http://localhost'
+  phases:
+    - duration: 100
+      arrivalRate: 500  # This sends 10,000 messages in 5 minutes
+      name: "HTTP Mutation Testing"
+
+scenarios:
+  - flow:
+      - post:
+          url: "/graphql"
+          json:
+            query: 'mutation($userId: String!, $content: String!) { createMessage(input: { userId: $userId, content: $content }) { id content createdAt user { username } } }'
+            variables:
+              userId: 'user_{{ $randomNumber(1, 10000) }}'
+              content: 'Test message from user_{{ $randomNumber(1, 10000) }}'

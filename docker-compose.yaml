@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+
+  nchan:
+    image: safesecurity/nginx-nchan:latest
+    volumes:
+      - ./nchan/nginx.conf:/etc/nginx/nginx.conf:ro
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+    depends_on:
+      - nestjs
+    ports:
+      - "80:80"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  # Add more services if necessary
+

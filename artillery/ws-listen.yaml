@@ -1,0 +1,14 @@
+config:
+  target: 'ws://localhost:3000/graphql'
+  phases:
+    - duration: 60
+      arrivalRate: 700  # This tries to get 10,000 users connecting in 5 minutes
+      name: "WebSocket Subscription Testing"
+
+scenarios:
+  - engine: "ws"
+    flow:
+      # Start the subscription to listen for new messages.
+      - send:
+          '{"id":"1","type":"start","payload":{"query":"subscription { messageAdded { id content createdAt user { username } } }"}}'
+      - think: 10
