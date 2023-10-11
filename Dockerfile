@@ -10,10 +10,10 @@ COPY package*.json ./
 # Install any dependencies
 RUN npm install
 
-RUN npm run build
 
 # Copy the rest of your app's source code from your host to your image filesystem.
 COPY . .
+RUN npm run build
 
 
 # Specify the command to run on container start
