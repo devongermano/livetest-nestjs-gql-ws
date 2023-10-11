@@ -1,20 +1,37 @@
-# Use the official image as a parent image
-FROM node:18
+# ---- Build Stage ----
+FROM node:18 AS build
 
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Copy the file from your host to your current location
+# Copy package*.json files
 COPY package*.json ./
 
-# Install any dependencies
-RUN npm install
+# Install dependencies
+RUN yarn
 
-
-# Copy the rest of your app's source code from your host to your image filesystem.
+# Copy the rest of the application
 COPY . .
-RUN npm run build
+
+# Build the application
+RUN yarn build
+
+# ---- Run Stage ----
+FROM node:18-slim
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy only the necessary files from the build stage
+COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV REDIS_HOST=redis
+ENV REDIS_PORT=6379
 
 
-# Specify the command to run on container start
+# Command to run the application
 CMD ["npm", "run", "start:prod"]
